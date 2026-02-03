@@ -1,18 +1,12 @@
-use crate::emu::emu::{get_cpu_regs, Emu};
-use crate::emu::exception_handler::ExceptionVector;
-use crate::emu::hle::bios;
-use crate::emu::{exception_handler, CpuType};
-use crate::jit::inst_mem_handler::imm_breakout;
-use crate::jit::jit_asm::JitAsm;
+use crate::core::exception_handler::ExceptionVector;
+use crate::core::{exception_handler, CpuType};
+use crate::get_jit_asm_ptr;
+use crate::jit::inst_branch_handler::breakout_imm;
 
-pub unsafe extern "C" fn exception_handler<const CPU: CpuType, const THUMB: bool>(asm: *mut JitAsm<CPU>, opcode: u32, vector: ExceptionVector, pc: u32) {
-    exception_handler::handle::<CPU, THUMB>((*asm).emu, opcode, vector);
-    if get_cpu_regs!((*asm).emu, CPU).is_halted() {
-        let asm = asm.as_mut().unwrap_unchecked();
-        imm_breakout!(asm, pc, THUMB);
+pub unsafe extern "C" fn software_interrupt_handler<const CPU: CpuType>(opcode: u8, pc: u32, total_cycles: u16) {
+    let asm = get_jit_asm_ptr::<CPU>().as_mut_unchecked();
+    exception_handler::handle::<CPU>(asm.emu, opcode, ExceptionVector::SoftwareInterrupt);
+    if asm.emu.cpu_is_halted(CPU) {
+        breakout_imm::<CPU>(asm, total_cycles, pc);
     }
-}
-
-pub unsafe extern "C" fn bios_uninterrupt<const CPU: CpuType>(emu: *mut Emu) {
-    bios::uninterrupt::<CPU>(emu.as_mut().unwrap())
 }

@@ -1,7 +1,7 @@
-workspace = { members = ["macros"] }
+workspace = { members = ["screenlayouts", "macros", "vitabuild", "vitaGL", "vixl"] }
 [package]
 name = "dsvita"
-version = "0.1.0"
+version = "0.9.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,44 +9,82 @@ edition = "2021"
 [package.metadata.vita]
 title_id = "DSVITA000"
 title_name = "DSVita"
-build_std = "std,panic_abort"
+build_std = "std,core,panic_abort"
 assets = "./static"
+vita_make_fself_flags = ["-a", "0x2800000000000001", "-na"]
 
 [dependencies]
 bilge = { git = "https://github.com/Grarak/bilge.git" }
-chrono = "0.4.33"
-paste = "1.0.14"
-static_assertions = "1.1.0"
+chrono = "0.4.40"
 dsvita_macros = { path = "macros" }
+enum_dispatch = "0.3.13"
 gl = { git = "https://github.com/bjz/gl-rs" }
-glyph_brush = "0.7.9"
+glyph_brush = "0.7.12"
+lazy_static = "1.5.0"
+paste = "1.0.15"
+rust-ini = "0.21.1"
+screenlayouts = { path = "screenlayouts" }
+static_assertions = "1.1.0"
+strum = "0.27.1"
+strum_macros = "0.27.1"
+vixl = { path = "vixl" }
+xxhash-rust = { version = "0.8.15", features = ["xxh32"] }
 
 [target.armv7-unknown-linux-gnueabihf.dependencies]
+clap = { version = "4.5.17", features = ["cargo"] }
 libc = "0.2.153"
-sdl2 = "0.37.0"
+sdl2 = "0.35.0"
+affinity = "0.1.2"
+backtrace = "0.3.74"
 
 [build-dependencies]
-bindgen = "0.69.4"
-cc = "1.0.100"
+bindgen = "0.71.1"
+vitabuild = { path = "vitabuild" }
 
 [target.armv7-sony-vita-newlibeabihf.dependencies]
 vitasdk-sys = { version = "0.3.2", features = [
     "SceAppMgr_stub",
+    "SceAppUtil_stub",
     "SceAudio_stub",
+    "SceAudioIn_stub",
     "SceCommonDialog_stub",
     "SceCtrl_stub",
     "SceDisplay_stub",
     "SceGxm_stub",
     "SceKernelThreadMgr_stub",
     "SceLibKernel_stub",
+    "SceShellSvc_stub",
     "SceSysmem_stub",
     "SceTouch_stub",
     "ScePgf_stub",
     "SceKernelDmacMgr_stub",
     "SceShaccCg_stub",
     "ScePower_stub",
-#    "SceRazorCapture_stub",
+    "SceSysrootForKernel_stub",
+    #    "SceRazorCapture_stub",
 ] }
+vita_gl = { path = "vitaGL" }
+
+[profile.release-debug]
+inherits = "dev"
+opt-level = 3
+overflow-checks = true
+debug-assertions = true
+debug = true
+
+[profile.release.package."*"]
+opt-level = 3
+codegen-units = 2
 
 [profile.release]
 panic = "abort"
+lto = true
+opt-level = 3
+codegen-units = 2
+
+[profile.release-profiling]
+inherits = "release"
+panic = "abort"
+lto = true
+opt-level = 3
+debug = true

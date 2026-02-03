@@ -1,3 +1,21 @@
 [submodule "vitaGL"]
-	path = vitaGL
-	url = https://github.com/Rinnegatamante/vitaGL.git
+	path = vitaGL/vitaGL_src
+	url = https://github.com/Grarak/vitaGL.git
+[submodule "kubridge"]
+	path = kubridge
+	url = https://github.com/bythos14/kubridge.git
+[submodule "vixl"]
+	path = vixl/vixl_src
+	url = https://github.com/Grarak/vixl.git
+[submodule "soundtouch"]
+	path = soundtouch
+	url = https://codeberg.org/soundtouch/soundtouch.git
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "vita-gprof"]
+	path = vita-gprof
+	url = https://github.com/Grarak/vita-gprof.git
+[submodule "math-neon"]
+	path = math-neon
+	url = https://github.com/Rinnegatamante/math-neon.git
